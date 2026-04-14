@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    username: ${PROD_DB_USERNAME}
+    password: ${PROD_DB_PASSWORD}
+  cloud:
+    gcp:
+      sql:
+        database-name: ${PROD_DB_NAME}
+        instance-connection-name: ${GCP_SQL_INSTANCE_CONNECTION_NAME}

@@ -1,0 +1,16 @@
+spring:
+  main:
+    web-application-type: none
+  ai:
+    openai:
+      api-key: ${SPRING_AI_OPENAI_API_KEY}
+      embedding:
+        options:
+          model: text-embedding-3-small
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1536
+        max-document-batch-size: 500
+        table-name: attachment_embeddings
