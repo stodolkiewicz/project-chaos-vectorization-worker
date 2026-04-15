@@ -3,7 +3,11 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/project-chaos}
     username: ${SPRING_DATASOURCE_USERNAME:admin}
     password: ${SPRING_DATASOURCE_PASSWORD:admin123}
-
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      properties:
+        schema.registry.url: http://localhost:8081
   cloud:
     gcp:
       sql:
