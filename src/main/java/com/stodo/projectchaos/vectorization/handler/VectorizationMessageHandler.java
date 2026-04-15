@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-@KafkaListener(topics = "attachment.vectorization.requested")
+@KafkaListener(topics = "attachment-vectorization-requested")
 public class VectorizationMessageHandler {
 
     @KafkaHandler
