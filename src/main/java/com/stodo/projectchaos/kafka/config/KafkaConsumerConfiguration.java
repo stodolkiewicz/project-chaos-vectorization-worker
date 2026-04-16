@@ -1,4 +1,4 @@
-package com.stodo.projectchaos.vectorization.config;
+package com.stodo.projectchaos.kafka.config;
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +60,7 @@ public class KafkaConsumerConfiguration {
         factory.setConsumerFactory(consumerFactory());
         // creates 3 consumer threads, each reading from a different partition
         factory.setConcurrency(3);
-        factory.getContainerProperties().setPollTimeout(3000);
+        factory.getContainerProperties().setPollTimeout(5000);
 
         // will send the message to the same topic it got it from but ending with -dlt
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate);
@@ -70,10 +70,8 @@ public class KafkaConsumerConfiguration {
                     log.error("Record failed after retries, sending to DLT. topic={}", record.topic(), exception);
                     recoverer.accept(record, exception);
                 },
-                new FixedBackOff(5000, 3)
+                new FixedBackOff(5000, 5)
         );
-//        errorHandler.addRetryableExceptions(RetryableException.class);
-//        errorHandler.addNotRetryableExceptions(NotRetryableException.class);
 
         factory.setCommonErrorHandler(errorHandler);
 
