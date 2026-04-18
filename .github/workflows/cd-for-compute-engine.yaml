@@ -53,12 +53,13 @@ jobs:
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
       - name: SSH and deploy
-        uses: google-github-actions/ssh-compute@v1
+        uses: google-github-actions/ssh-compute@v2
         with:
           instance_name: ${{ vars.GCE_INSTANCE_NAME }}
           zone: ${{ vars.GCE_ZONE }}
           ssh_private_key: ${{ secrets.GCE_SSH_PRIVATE_KEY }}
           command: |
+            echo 'hello!'
             IMAGE=${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-vectorization-worker:${{ github.ref_name }}
 
             gcloud auth configure-docker ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev --quiet
