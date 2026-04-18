@@ -1,0 +1,83 @@
+name: Build and Deploy on Compute Engine
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  docker-publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: Configure Docker to use gcloud
+        run: |
+          gcloud auth configure-docker ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build, tag and push container
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-vectorization-worker:${{ github.ref_name }}
+            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-vectorization-worker:latest
+
+  deploy-to-compute-engine:
+    runs-on: ubuntu-latest
+    needs: docker-publish
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: SSH and deploy
+        uses: google-github-actions/ssh-compute@v1
+        with:
+          instance_name: ${{ vars.GCE_INSTANCE_NAME }}
+          zone: ${{ vars.GCE_ZONE }}
+          ssh_private_key: ${{ secrets.GCE_SSH_PRIVATE_KEY }}
+          command: |
+            IMAGE=${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-vectorization-worker:${{ github.ref_name }}
+
+            gcloud auth configure-docker ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev --quiet
+            docker pull $IMAGE
+
+            docker stop project-chaos-vectorization-worker --time=30 2>/dev/null || true
+            docker rm project-chaos-vectorization-worker 2>/dev/null || true
+
+            docker run -d \
+              --name project-chaos-vectorization-worker \
+              --restart unless-stopped \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -e SPRING_AI_OPENAI_API_KEY=$(gcloud secrets versions access latest --secret=SPRING_AI_OPENAI_API_KEY) \
+              -e PROD_DB_NAME=$(gcloud secrets versions access latest --secret=PROD_DB_NAME) \
+              -e PROD_DB_USERNAME=$(gcloud secrets versions access latest --secret=PROD_DB_USERNAME) \
+              -e PROD_DB_PASSWORD=$(gcloud secrets versions access latest --secret=PROD_DB_PASSWORD) \
+              -e GCP_SQL_INSTANCE_CONNECTION_NAME=$(gcloud secrets versions access latest --secret=GCP_SQL_INSTANCE_CONNECTION_NAME) \
+              -e SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS=$(gcloud secrets versions access latest --secret=KAFKA_BOOTSTRAP_SERVERS) \
+              -e SPRING_KAFKA_PROPERTIES_SCHEMA_REGISTRY_URL=$(gcloud secrets versions access latest --secret=SCHEMA_REGISTRY_URL) \
+              $IMAGE
+
+            docker image prune -f
