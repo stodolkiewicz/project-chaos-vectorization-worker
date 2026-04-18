@@ -63,12 +63,12 @@ jobs:
             IMAGE=${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-vectorization-worker:${{ github.ref_name }}
 
             gcloud auth configure-docker ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev --quiet
-            docker pull $IMAGE
+            sudo docker pull $IMAGE
 
-            docker stop project-chaos-vectorization-worker --time=30 2>/dev/null || true
-            docker rm project-chaos-vectorization-worker 2>/dev/null || true
+            sudo docker stop project-chaos-vectorization-worker --time=30 2>/dev/null || true
+            sudo docker rm project-chaos-vectorization-worker 2>/dev/null || true
 
-            docker run -d \
+            sudo docker run -d \
               --name project-chaos-vectorization-worker \
               --restart unless-stopped \
               -e SPRING_PROFILES_ACTIVE=prod \
@@ -81,4 +81,4 @@ jobs:
               -e SPRING_KAFKA_PROPERTIES_SCHEMA_REGISTRY_URL=$(gcloud secrets versions access latest --secret=SCHEMA_REGISTRY_URL) \
               $IMAGE
 
-            docker image prune -f
+            sudo docker image prune -f
