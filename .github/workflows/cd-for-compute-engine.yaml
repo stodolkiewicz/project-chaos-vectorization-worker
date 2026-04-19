@@ -78,7 +78,8 @@ jobs:
           sudo docker run -d \
           --name project-chaos-vectorization-worker \
           --restart unless-stopped \
-          --memory-swap=3g \
+          --memory=1300m \
+          --memory-swap=5300m \
           -v /cert:/cert:ro \
           -e SPRING_PROFILES_ACTIVE=prod \
           -e SPRING_AI_OPENAI_API_KEY="$(gcloud secrets versions access latest --secret=SPRING_AI_OPENAI_API_KEY)" \
