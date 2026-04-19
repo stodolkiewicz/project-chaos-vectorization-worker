@@ -68,7 +68,7 @@ jobs:
           gcloud secrets versions access latest --secret=KEYSTORE_P12_B64_CONTENT | base64 -d | sudo tee /cert/keystore.p12 > /dev/null
           gcloud secrets versions access latest --secret=TRUSTSTORE_P12_B64_CONTENT | base64 -d | sudo tee /cert/truststore.p12 > /dev/null
           
-          gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+          gcloud auth print-access-token | sudo docker login -u oauth2accesstoken --password-stdin https://europe-west1-docker.pkg.dev
           
           sudo docker pull "${{ env.FULL_IMAGE_NAME }}"
           
