@@ -64,33 +64,30 @@ jobs:
           #!/bin/bash
           set -euo pipefail
           
-          IMAGE="${{ env.FULL_IMAGE_NAME }}"
-          
           sudo mkdir -p /cert
           gcloud secrets versions access latest --secret=KEYSTORE_P12_B64_CONTENT | base64 -d | sudo tee /cert/keystore.p12 > /dev/null
           gcloud secrets versions access latest --secret=TRUSTSTORE_P12_B64_CONTENT | base64 -d | sudo tee /cert/truststore.p12 > /dev/null
           
-          gcloud auth configure-docker ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev --quiet
+          gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
           
-          # Zawsze używaj "$IMAGE" w cudzysłowie
-          sudo docker pull "$IMAGE"
+          sudo docker pull "${{ env.FULL_IMAGE_NAME }}"
           
           sudo docker stop project-chaos-vectorization-worker --time=30 2>/dev/null || true
           sudo docker rm project-chaos-vectorization-worker 2>/dev/null || true
           
           sudo docker run -d \
-            --name project-chaos-vectorization-worker \
-            --restart unless-stopped \
-            -v /cert:/cert:ro \
-            -e SPRING_PROFILES_ACTIVE=prod \
-            -e SPRING_AI_OPENAI_API_KEY="$(gcloud secrets versions access latest --secret=SPRING_AI_OPENAI_API_KEY)" \
-            -e PROD_DB_NAME="$(gcloud secrets versions access latest --secret=PROD_DB_NAME)" \
-            -e PROD_DB_USERNAME="$(gcloud secrets versions access latest --secret=PROD_DB_USERNAME)" \
-            -e PROD_DB_PASSWORD="$(gcloud secrets versions access latest --secret=PROD_DB_PASSWORD)" \
-            -e GCP_SQL_INSTANCE_CONNECTION_NAME="$(gcloud secrets versions access latest --secret=GCP_SQL_INSTANCE_CONNECTION_NAME)" \
-            -e BOOTSTRAP_SERVERS="$(gcloud secrets versions access latest --secret=BOOTSTRAP_SERVERS)" \
-            -e SCHEMA_REGISTRY_URL="$(gcloud secrets versions access latest --secret=SCHEMA_REGISTRY_URL)" \
-            "$IMAGE"
+          --name project-chaos-vectorization-worker \
+          --restart unless-stopped \
+          -v /cert:/cert:ro \
+          -e SPRING_PROFILES_ACTIVE=prod \
+          -e SPRING_AI_OPENAI_API_KEY="$(gcloud secrets versions access latest --secret=SPRING_AI_OPENAI_API_KEY)" \
+          -e PROD_DB_NAME="$(gcloud secrets versions access latest --secret=PROD_DB_NAME)" \
+          -e PROD_DB_USERNAME="$(gcloud secrets versions access latest --secret=PROD_DB_USERNAME)" \
+          -e PROD_DB_PASSWORD="$(gcloud secrets versions access latest --secret=PROD_DB_PASSWORD)" \
+          -e GCP_SQL_INSTANCE_CONNECTION_NAME="$(gcloud secrets versions access latest --secret=GCP_SQL_INSTANCE_CONNECTION_NAME)" \
+          -e BOOTSTRAP_SERVERS="$(gcloud secrets versions access latest --secret=BOOTSTRAP_SERVERS)" \
+          -e SCHEMA_REGISTRY_URL="$(gcloud secrets versions access latest --secret=SCHEMA_REGISTRY_URL)" \
+          "${{ env.FULL_IMAGE_NAME }}"
           
           sudo docker image prune -f
           EOF
