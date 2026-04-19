@@ -60,7 +60,7 @@ jobs:
           # Definiujemy pełną nazwę obrazu jako zmienną środowiskową kroku
           FULL_IMAGE_NAME: ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-vectorization-worker:${{ github.ref_name }}
         run: |
-          cat > /tmp/deploy.sh << 'EOF'
+          cat > /tmp/deploy.sh << EOF
           #!/bin/bash
           set -euo pipefail
           
