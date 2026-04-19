@@ -39,7 +39,7 @@ jobs:
 
   deploy-to-compute-engine:
     runs-on: ubuntu-latest
-    needs: docker-publish
+#    needs: docker-publish
 
     permissions:
       contents: 'read'
@@ -78,8 +78,9 @@ jobs:
           sudo docker run -d \
           --name project-chaos-vectorization-worker \
           --restart unless-stopped \
-          --memory=1300m \
-          --memory-swap=5300m \
+          --memory=3g \
+          --memory-swap=3g \
+          -e JAVA_TOOL_OPTIONS='-Xmx2g -Xms512m -XX:MaxMetaspaceSize=256m -XX:+UseG1GC' \
           -v /cert:/cert:ro \
           -e SPRING_PROFILES_ACTIVE=prod \
           -e SPRING_AI_OPENAI_API_KEY="$(gcloud secrets versions access latest --secret=SPRING_AI_OPENAI_API_KEY)" \
