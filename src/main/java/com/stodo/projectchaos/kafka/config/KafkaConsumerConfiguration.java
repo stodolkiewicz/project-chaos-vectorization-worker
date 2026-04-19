@@ -58,8 +58,8 @@ public class KafkaConsumerConfiguration {
         ConcurrentKafkaListenerContainerFactory<Void, Object> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        // creates 3 consumer threads, each reading from a different partition
-        factory.setConcurrency(3);
+        // creates 1 consumer thread
+        factory.setConcurrency(1);
         factory.getContainerProperties().setPollTimeout(5000);
 
         // will send the message to the same topic it got it from but ending with -dlt
