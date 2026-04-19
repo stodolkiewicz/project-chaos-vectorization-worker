@@ -10,7 +10,6 @@ spring:
   kafka:
     properties:
       bootstrap-servers: ${BOOTSTRAP_SERVERS}
-      ssl.endpoint.identification.algorithm: ""
       schema.registry.url: ${SCHEMA_REGISTRY_URL}
       security.protocol: SSL
       ssl.truststore.type: PKCS12
@@ -27,7 +26,6 @@ spring:
       schema.registry.ssl.keystore.location: /cert/keystore.p12
       schema.registry.ssl.keystore.password: ${KEYSTORE_PASSWORD}
     consumer:
-      bootstrap-servers: ${BOOTSTRAP_SERVERS}
       fetch-max-bytes: 2048576
       max-partition-fetch-bytes: 262144
       group-id: vectorization-worker-consumer-group
