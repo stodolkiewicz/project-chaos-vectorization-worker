@@ -80,7 +80,7 @@ jobs:
           --restart unless-stopped \
           --memory=700m \
           --memory-swap=700m \
-          -e JAVA_TOOL_OPTIONS="-Xmx400m -Xms256m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC" \
+          -e JAVA_TOOL_OPTIONS='-Xmx400m -Xms256m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC' \
           -v /cert:/cert:ro \
           -e SPRING_PROFILES_ACTIVE=prod \
           -e SPRING_AI_OPENAI_API_KEY="$(gcloud secrets versions access latest --secret=SPRING_AI_OPENAI_API_KEY)" \
