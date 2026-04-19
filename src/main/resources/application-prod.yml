@@ -2,6 +2,11 @@ spring:
   datasource:
     username: ${PROD_DB_USERNAME}
     password: ${PROD_DB_PASSWORD}
+  kafka:
+    properties:
+      schema.registry.url: ${SCHEMA_REGISTRY_URL}
+    consumer:
+      bootstrap-servers: ${BOOTSTRAP_SERVERS}
   cloud:
     gcp:
       sql:
