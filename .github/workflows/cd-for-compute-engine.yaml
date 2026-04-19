@@ -90,6 +90,9 @@ jobs:
           -e GCP_SQL_INSTANCE_CONNECTION_NAME="$(gcloud secrets versions access latest --secret=GCP_SQL_INSTANCE_CONNECTION_NAME)" \
           -e BOOTSTRAP_SERVERS="$(gcloud secrets versions access latest --secret=BOOTSTRAP_SERVERS)" \
           -e SCHEMA_REGISTRY_URL="$(gcloud secrets versions access latest --secret=SCHEMA_REGISTRY_URL)" \
+          -e TRUSTSTORE_PASSWORD="$(gcloud secrets versions access latest --secret=TRUSTSTORE_PASSWORD)" \
+          -e KEYSTORE_PASSWORD="$(gcloud secrets versions access latest --secret=KEYSTORE_PASSWORD)" 
+          
           "${{ env.FULL_IMAGE_NAME }}"
           
           sudo docker image prune -f
