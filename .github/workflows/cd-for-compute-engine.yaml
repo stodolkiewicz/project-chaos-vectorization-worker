@@ -83,7 +83,7 @@ jobs:
             -e PROD_DB_USERNAME=$(gcloud secrets versions access latest --secret=PROD_DB_USERNAME) \
             -e PROD_DB_PASSWORD=$(gcloud secrets versions access latest --secret=PROD_DB_PASSWORD) \
             -e GCP_SQL_INSTANCE_CONNECTION_NAME=$(gcloud secrets versions access latest --secret=GCP_SQL_INSTANCE_CONNECTION_NAME) \
-            -e BOOTSTRAP_SERVERS=$(gcloud secrets versions access latest --secret=KAFKA_BOOTSTRAP_SERVERS) \
+            -e BOOTSTRAP_SERVERS=$(gcloud secrets versions access latest --secret=BOOTSTRAP_SERVERS) \
             -e SCHEMA_REGISTRY_URL=$(gcloud secrets versions access latest --secret=SCHEMA_REGISTRY_URL) \
             $IMAGE
 
