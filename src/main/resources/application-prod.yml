@@ -1,4 +1,8 @@
 spring:
+  main:
+    lazy-initialization: true
+  jmx:
+    enabled: false
   datasource:
     username: ${PROD_DB_USERNAME}
     password: ${PROD_DB_PASSWORD}

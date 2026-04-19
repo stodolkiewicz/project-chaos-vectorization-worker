@@ -11,7 +11,7 @@ COPY ./src ./src
 RUN ./mvnw clean package -DskipTests
 
 ### STAGE 2: FINAL ###
-FROM mirror.gcr.io/library/eclipse-temurin:21-jre-jammy AS final
+FROM mirror.gcr.io/library/eclipse-temurin:21-jre-alpine AS final
 WORKDIR /opt/app
 EXPOSE 8080
 
