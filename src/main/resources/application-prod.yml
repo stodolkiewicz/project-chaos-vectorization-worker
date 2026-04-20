@@ -11,6 +11,7 @@ spring:
     bootstrap-servers: ${BOOTSTRAP_SERVERS}
     properties:
       schema.registry.url: ${SCHEMA_REGISTRY_URL}
+      basic.auth.credentials.source: URL
       security.protocol: SSL
       ssl.truststore.type: PKCS12
       ssl.truststore.location: /cert/truststore.p12
@@ -18,13 +19,6 @@ spring:
       ssl.keystore.type: PKCS12
       ssl.keystore.location: /cert/keystore.p12
       ssl.keystore.password: ${KEYSTORE_PASSWORD}
-      ssl.key.password: ${KEYSTORE_PASSWORD}
-      schema.registry.ssl.truststore.type: PKCS12
-      schema.registry.ssl.truststore.location: /cert/truststore.p12
-      schema.registry.ssl.truststore.password: ${TRUSTSTORE_PASSWORD}
-      schema.registry.ssl.keystore.type: PKCS12
-      schema.registry.ssl.keystore.location: /cert/keystore.p12
-      schema.registry.ssl.keystore.password: ${KEYSTORE_PASSWORD}
     consumer:
       fetch-max-bytes: 2048576
       max-partition-fetch-bytes: 262144
