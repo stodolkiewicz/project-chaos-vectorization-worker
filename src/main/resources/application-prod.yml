@@ -8,8 +8,8 @@ spring:
       maximum-pool-size: 3
       minimum-idle: 1
   kafka:
+    bootstrap-servers: ${BOOTSTRAP_SERVERS}
     properties:
-      bootstrap-servers: ${BOOTSTRAP_SERVERS}
       schema.registry.url: ${SCHEMA_REGISTRY_URL}
       security.protocol: SSL
       ssl.truststore.type: PKCS12
