@@ -1,5 +1,7 @@
 package com.stodo.projectchaos.attachment;
 
+import com.stodo.projectchaos.model.enums.VectorStatusEnum;
+
 import java.util.UUID;
 
 public record AttachmentData(
@@ -8,5 +10,6 @@ public record AttachmentData(
         String originalName,
         long fileSizeInBytes,
         UUID taskId,
-        UUID projectId
+        UUID projectId,
+        VectorStatusEnum vectorStatus
 ) {}

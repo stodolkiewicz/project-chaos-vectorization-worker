@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
@@ -36,7 +37,16 @@ public class AttachmentEmbeddingService {
     @Transactional
     public void embedAttachment(UUID attachmentId) {
         try {
-            AttachmentData attachment = attachmentRepository.findById(attachmentId);
+            Optional<AttachmentData> maybeAttachment = attachmentRepository.findById(attachmentId);
+            if (maybeAttachment.isEmpty()) {
+                log.warn("Attachment {} not found, skipping", attachmentId);
+                return;
+            }
+            AttachmentData attachment = maybeAttachment.get();
+            if (attachment.vectorStatus() != VectorStatusEnum.PENDING) {
+                log.warn("Attachment {} has status {}, expected PENDING, skipping", attachmentId, attachment.vectorStatus());
+                return;
+            }
             Document document = new Document(attachment.extractedText());
 
             List<String> chunks = tokenTextSplitter.split(List.of(document))
@@ -74,6 +84,7 @@ public class AttachmentEmbeddingService {
         } catch (Exception e) {
             log.error("Failed to embed attachment {}", attachmentId, e);
             markAsFailed(attachmentId);
+            throw e;
         }
     }
 
